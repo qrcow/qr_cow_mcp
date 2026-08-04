@@ -44,3 +44,7 @@ jobs:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Re-running a tag (or a version already uploaded manually) must
+          # not fail the workflow on PyPI's duplicate-file rejection.
+          skip-existing: true
