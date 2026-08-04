@@ -1,0 +1,46 @@
+name: release
+
+# Tag-driven release: push a v* tag and this builds + publishes to PyPI
+# via trusted publishing (OIDC) — no API token stored anywhere.
+# One-time PyPI setup is documented in RELEASING.md.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Guard — tag matches package version
+        run: |
+          PKG=$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "::error::tag v$TAG != pyproject version $PKG"; exit 1
+          fi
+      - name: Build
+        run: pip install build && python -m build
+      - name: Validate metadata
+        run: pip install twine && twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write   # required for PyPI trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
