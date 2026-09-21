@@ -1,0 +1,57 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.2",
+  "name": "qr-cow-mcp",
+  "display_name": "qr-cow QR Code Generator",
+  "version": "0.1.1",
+  "description": "Create, style, and manage QR codes (with scan analytics) from any MCP client.",
+  "long_description": "MCP server for qr-cow.com. Tools: create static or dynamic QR codes in 13 content types (URL, Wi-Fi, vCard, email, SMS, event, crypto, and more), render styled codes with colors, gradients, and logos, list and inspect saved codes, update a dynamic code's destination after printing, and pull privacy-first scan analytics. Static generation works without an account; management tools use a qr-cow personal access token.",
+  "author": {
+    "name": "qr-cow",
+    "email": "hi@qr-cow.com",
+    "url": "https://qr-cow.com"
+  },
+  "homepage": "https://qr-cow.com",
+  "documentation": "https://qr-cow.com/docs",
+  "support": "https://github.com/qrcow/qr_cow_mcp/issues",
+  "license": "MIT",
+  "keywords": ["qr-code", "qr", "generator", "analytics", "marketing"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qrcow/qr_cow_mcp"
+  },
+  "server": {
+    "type": "python",
+    "entry_point": "src/qr_cow_mcp/server.py",
+    "mcp_config": {
+      "command": "uvx",
+      "args": ["qr-cow-mcp"],
+      "env": {
+        "QRCOW_API_TOKEN": "${user_config.api_token}"
+      }
+    }
+  },
+  "user_config": {
+    "api_token": {
+      "type": "string",
+      "title": "qr-cow API token",
+      "description": "Personal access token from your qr-cow dashboard (Settings > API). Optional: only needed for saving codes, dynamic destinations, and analytics.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "create_qrcode", "description": "Create a static or dynamic QR code (URL, Wi-Fi, vCard, and more)" },
+    { "name": "render_styled_qrcode", "description": "Render a styled QR image with colors, gradients, and a logo" },
+    { "name": "list_qrcodes", "description": "List your saved QR codes" },
+    { "name": "get_qrcode", "description": "Get one saved QR code" },
+    { "name": "update_qrcode_destination", "description": "Change where a dynamic QR code redirects" },
+    { "name": "delete_qrcode", "description": "Delete a saved QR code" },
+    { "name": "get_qrcode_analytics", "description": "Scan analytics for a QR code" },
+    { "name": "me", "description": "Show the authenticated account" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": { "python": ">=3.10" }
+  }
+}
