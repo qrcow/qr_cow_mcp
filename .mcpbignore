@@ -5,3 +5,6 @@ dist/
 .github/
 tests/
 *.mcpb
+__pycache__/
+*.pyc
+*.egg-info/

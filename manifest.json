@@ -5,7 +5,7 @@
   "display_name": "qr-cow QR Code Generator",
   "version": "0.1.1",
   "description": "Create, style, and manage QR codes (with scan analytics) from any MCP client.",
-  "long_description": "MCP server for qr-cow.com. Tools: create static or dynamic QR codes in 13 content types (URL, Wi-Fi, vCard, email, SMS, event, crypto, and more), render styled codes with colors, gradients, and logos, list and inspect saved codes, update a dynamic code's destination after printing, and pull privacy-first scan analytics. Static generation works without an account; management tools use a qr-cow personal access token.",
+  "long_description": "MCP server for qr-cow.com. Tools: create static or dynamic QR codes in 13 content types (URL, Wi-Fi, vCard, email, SMS, event, crypto, and more), render styled codes with colors, gradients, and logos, list and inspect saved codes, update a dynamic code's destination after printing, and pull privacy-first scan analytics. Requires a free qr-cow account and a personal access token.",
   "author": {
     "name": "qr-cow",
     "email": "hi@qr-cow.com",
@@ -15,7 +15,13 @@
   "documentation": "https://qr-cow.com/docs",
   "support": "https://github.com/qrcow/qr_cow_mcp/issues",
   "license": "MIT",
-  "keywords": ["qr-code", "qr", "generator", "analytics", "marketing"],
+  "keywords": [
+    "qr-code",
+    "qr",
+    "generator",
+    "analytics",
+    "marketing"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/qrcow/qr_cow_mcp"
@@ -25,7 +31,9 @@
     "entry_point": "src/qr_cow_mcp/server.py",
     "mcp_config": {
       "command": "uvx",
-      "args": ["qr-cow-mcp"],
+      "args": [
+        "qr-cow-mcp"
+      ],
       "env": {
         "QRCOW_API_TOKEN": "${user_config.api_token}"
       }
@@ -35,23 +43,53 @@
     "api_token": {
       "type": "string",
       "title": "qr-cow API token",
-      "description": "Personal access token from your qr-cow dashboard (Settings > API). Optional: only needed for saving codes, dynamic destinations, and analytics.",
+      "description": "Personal access token from https://qr-cow.com/dashboard/api (free account). Required: every tool calls the qr-cow API.",
       "sensitive": true,
-      "required": false
+      "required": true
     }
   },
   "tools": [
-    { "name": "create_qrcode", "description": "Create a static or dynamic QR code (URL, Wi-Fi, vCard, and more)" },
-    { "name": "render_styled_qrcode", "description": "Render a styled QR image with colors, gradients, and a logo" },
-    { "name": "list_qrcodes", "description": "List your saved QR codes" },
-    { "name": "get_qrcode", "description": "Get one saved QR code" },
-    { "name": "update_qrcode_destination", "description": "Change where a dynamic QR code redirects" },
-    { "name": "delete_qrcode", "description": "Delete a saved QR code" },
-    { "name": "get_qrcode_analytics", "description": "Scan analytics for a QR code" },
-    { "name": "me", "description": "Show the authenticated account" }
+    {
+      "name": "create_qrcode",
+      "description": "Create and SAVE a QR code in the customer's qr-cow account (it appears on their dashboard and is tracked). Pick a content type and pass the content as a string. Static codes are unlimited on every plan; dynamic codes (editable + scan analytics) have a per-plan limit (the free plan includes a few). To just render a styled image without saving, use render_styled_qrcode instead."
+    },
+    {
+      "name": "render_styled_qrcode",
+      "description": "Render a fully STYLED QR code image (colours, dot + eye shapes, gradient, logo, error-correction) from data and a style, WITHOUT saving it to the account. Great for generating codes in bulk. Use a `preset` for a ready-made look and/or set `style` fields to override. Returns the QR as an image (png/jpg) or SVG source. Stateless: this calls POST /v1/qr/render and stores nothing."
+    },
+    {
+      "name": "list_qrcodes",
+      "description": "List the customer's recent QR codes, newest first."
+    },
+    {
+      "name": "get_qrcode",
+      "description": "Fetch full details for one QR code by id, including current redirect URL for dynamic codes."
+    },
+    {
+      "name": "update_qrcode_destination",
+      "description": "Update a dynamic QR code's destination URL. The printed code doesn't change — only what scanning it leads to."
+    },
+    {
+      "name": "delete_qrcode",
+      "description": "Soft-delete a QR code. Scans afterwards return 404."
+    },
+    {
+      "name": "get_qrcode_analytics",
+      "description": "Fetch scan analytics for one QR code: total scans, unique scanners, breakdown by country, device, and hour of day."
+    },
+    {
+      "name": "me",
+      "description": "Return the authenticated user's profile + plan info."
+    }
   ],
   "compatibility": {
-    "platforms": ["darwin", "win32", "linux"],
-    "runtimes": { "python": ">=3.10" }
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "python": ">=3.10"
+    }
   }
 }
